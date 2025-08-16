@@ -6,8 +6,6 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 export const POST = asyncTryCatchWrapper(async (request: NextRequest) => {
-  await connectDB();
-
   // get the body data:
   const { email, password } = await request.json();
 
@@ -19,7 +17,7 @@ export const POST = asyncTryCatchWrapper(async (request: NextRequest) => {
   // check if the user exists :
   const user = await User.findOne({ email });
 
-  // throw error if user does not exists with same email :
+  // throw error if user does not exists with the specified email :
   if (!user) {
     throw new CustomApiError("User not found", 404);
   }

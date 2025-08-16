@@ -6,8 +6,6 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 export const POST = asyncTryCatchWrapper(async (request: NextRequest) => {
-  await connectDB();
-
   // get the body data:
   const { email, password } = await request.json();
 

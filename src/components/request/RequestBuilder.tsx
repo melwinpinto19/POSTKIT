@@ -2,6 +2,9 @@ import React from "react";
 import { RequestProvider } from "@/context/RequestContext";
 import RequestBreadcrumb from "@/components/request/RequestBreadcrumb";
 import RequestTopBar from "@/components/request/RequestTopBar";
+import { Tabs } from "../ui/tabs";
+import RequestTabs from "./tabs/RequestTabs";
+import RequestResponse from "./RequestResponse";
 
 export default function RequestBuilder() {
   return (
@@ -10,6 +13,8 @@ export default function RequestBuilder() {
         <RequestBreadcrumb />
         <div className="mt-4 rounded-lg border bg-background shadow-sm">
           <RequestTopBar />
+          <RequestTabs />
+          <RequestResponse />
         </div>
       </div>
     </RequestProvider>

@@ -1,11 +1,12 @@
+import { ApiResponse } from "@/api";
 import { RequestType, ResponseData } from "@/types/request";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 type RequestContextType = {
   request: RequestType;
   setRequest: React.Dispatch<React.SetStateAction<RequestType>>;
-  response: ResponseData | null;
-  setResponse: React.Dispatch<React.SetStateAction<ResponseData | null>>;
+  response: ApiResponse | null;
+  setResponse: React.Dispatch<React.SetStateAction<ApiResponse | null>>;
   isLoading: boolean;
   isResponseLoading: boolean;
 };
@@ -22,9 +23,11 @@ export const RequestProvider: React.FC<{ children: React.ReactNode }> = ({
     params: [],
     body: { type: "raw", content: "" },
   });
-  const [response, setResponse] = useState<ResponseData | null>(null);
+  const [response, setResponse] = useState<ApiResponse | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isResponseLoading, setIsResponseLoading] = useState<boolean>(false);
+
+  useEffect(() => {}, []);
 
   return (
     <RequestContext.Provider

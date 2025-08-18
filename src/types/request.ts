@@ -18,3 +18,13 @@ export interface ResponseData {
   responseTime?: number;
   size?: string;
 }
+
+export interface ApiResponse {
+  status: number;
+  statusText: string;
+  headers: Record<string, string>;
+  data: any;
+  responseTime: number;
+  size: string;
+  contentType: string;
+}

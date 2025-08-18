@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useRequest } from "@/context/RequestContext";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -8,27 +8,56 @@ export default function RequestParams() {
   const { request, setRequest } = useRequest();
   const params = request.params || [];
 
+  const updateRequestURL = (params: Array<Record<string, string>>) => {
+    if (!request.url) return;
+
+    try {
+      const url = new URL(request.url);
+      const baseURL = new URL(url.origin + url.pathname);
+
+      console.log("Base URL:", baseURL);
+
+      params.forEach((param) => {
+        baseURL.searchParams.append(param.key, param.value);
+      });
+      setRequest((prev) => ({
+        ...prev,
+        url: baseURL.toString(),
+      }));
+    } catch (error) {}
+  };
+
   const addParam = () => {
+    const updatedParams = [...params, { key: "", value: "" }];
     setRequest((prev) => ({
       ...prev,
-      params: [...params, { key: "", value: "" }],
+      params: updatedParams,
     }));
+    updateRequestURL(params);
   };
 
   const removeParam = (index: number) => {
+    const updatedParams = params.filter((_, i) => i !== index);
     setRequest((prev) => ({
       ...prev,
-      params: params.filter((_, i) => i !== index),
+      params: updatedParams,
     }));
+    updateRequestURL(updatedParams);
   };
 
-  const updateParam = (index: number, field: "key" | "value", value: string) => {
+  const updateParam = (
+    index: number,
+    field: "key" | "value",
+    value: string
+  ) => {
+    const updatedParams = params.map((param, i) =>
+      i === index ? { ...param, [field]: value } : param
+    );
     setRequest((prev) => ({
       ...prev,
-      params: params.map((param, i) =>
-        i === index ? { ...param, [field]: value } : param
-      ),
+      params: updatedParams,
     }));
+    updateRequestURL(updatedParams);
   };
 
   return (

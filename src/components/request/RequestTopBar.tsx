@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/select";
 import { Send } from "lucide-react";
 import { RequestMethod } from "@/types/request";
+import axios, { AxiosError } from "axios";
+import { sendApiRequest } from "@/api";
 
 const httpMethods: { value: RequestMethod; color: string }[] = [
   { value: "GET", color: "text-green-600" },
@@ -23,11 +25,71 @@ const httpMethods: { value: RequestMethod; color: string }[] = [
 ];
 
 export default function RequestTopBar() {
-  const { request, setRequest } = useRequest();
+  const { request, setRequest, setResponse } = useRequest();
 
-  const handleSend = () => {
-    console.log("Sending request:", request);
-    // Implement request sending logic here
+  // const handleSend = async () => {
+  //   console.log("Sending request:", request);
+  //   // Implement request sending logic here
+  //   const params: Record<string, string> = {};
+  //   request.params.forEach((param) => {
+  //     params[param.key] = param.value;
+  //   });
+
+  //   const headers: Record<string, string> = {};
+  //   request.headers.forEach((header) => {
+  //     headers[header.key] = header.value;
+  //   });
+
+  //   const startTime = Date.now();
+  //   try {
+  //     const response = await axios.get(request.url, {
+  //       params,
+  //       headers,
+  //     });
+  //     setResponse({
+  //       status: response.status,
+  //       statusText: response.statusText,
+  //       headers: response.headers as Record<string, string>,
+  //       data: response.data,
+  //       responseTime: Date.now() - startTime,
+  //     });
+  //     console.log({
+  //       status: response.status,
+  //       statusText: response.statusText,
+  //       headers: response.headers as Record<string, string>,
+  //       data: response.data,
+  //       responseTime: Date.now() - startTime,
+  //     });
+  //   } catch (error) {
+  //     if (error instanceof AxiosError) {
+  //       setResponse({
+  //         status: error.response?.status || 500,
+  //         statusText: error.response?.statusText || "Internal Server Error",
+  //         headers: error.response?.headers as Record<string, string>,
+  //         data: error.response?.data,
+  //         responseTime: Date.now() - startTime,
+  //       });
+  //     }
+  //   }
+  // };
+
+  const handleSend = async () => {
+    const transformedHeaders: Record<string, string> = {};
+
+    request.headers.forEach(({ key, value }) => {
+      transformedHeaders[key] = value;
+    });
+
+    const response = await sendApiRequest({
+      method: request.method,
+      url: request.url,
+      headers: transformedHeaders,
+      body: request.body,
+    });
+
+    setResponse(response);
+
+    console.log(response);
   };
 
   const handleMethodChange = (method: string) => {
@@ -42,6 +104,29 @@ export default function RequestTopBar() {
       ...prev,
       url: e.target.value,
     }));
+    updateParams(e.target.value);
+  };
+
+  const updateParams = (requestURL: string) => {
+    try {
+      const url = new URL(requestURL);
+
+      const searchParams = Object.fromEntries(url.searchParams);
+
+      const transformedParams = Object.keys(searchParams).map((key) => ({
+        key,
+        value: searchParams[key],
+      }));
+
+      setRequest((prev) => ({
+        ...prev,
+        params: transformedParams,
+      }));
+
+      console.log("Search params:", transformedParams);
+    } catch (error) {
+      console.error("Error updating params:", error);
+    }
   };
 
   const currentMethod = httpMethods.find((m) => m.value === request.method);

@@ -25,7 +25,8 @@ const httpMethods: { value: RequestMethod; color: string }[] = [
 ];
 
 export default function RequestTopBar() {
-  const { request, setRequest, setResponse } = useRequest();
+  const { request, setRequest, setResponse, setIsResponseLoading } =
+    useRequest();
 
   // const handleSend = async () => {
   //   console.log("Sending request:", request);
@@ -74,22 +75,95 @@ export default function RequestTopBar() {
   // };
 
   const handleSend = async () => {
+    setIsResponseLoading(true);
+
     const transformedHeaders: Record<string, string> = {};
 
+    // Add headers from the headers tab
     request.headers.forEach(({ key, value }) => {
       transformedHeaders[key] = value;
     });
 
+    // Add authorization headers based on auth config
+    const authConfig = (request as any).auth;
+    if (authConfig && authConfig.type !== "none") {
+      switch (authConfig.type) {
+        case "bearer":
+          if (authConfig.token) {
+            transformedHeaders["Authorization"] = `Bearer ${authConfig.token}`;
+          }
+          break;
+
+        case "basic":
+          if (authConfig.username && authConfig.password) {
+            const credentials = btoa(
+              `${authConfig.username}:${authConfig.password}`
+            );
+            transformedHeaders["Authorization"] = `Basic ${credentials}`;
+          }
+          break;
+
+        case "apikey":
+          if (authConfig.key && authConfig.value) {
+            if (authConfig.addTo === "header") {
+              transformedHeaders[authConfig.key] = authConfig.value;
+            }
+            // For query params, we'll handle this in the URL modification below
+          }
+          break;
+
+        case "digest":
+          // Digest auth is typically handled by the browser/client automatically
+          // For now, we'll add basic auth headers as a fallback
+          if (authConfig.username && authConfig.password) {
+            transformedHeaders[
+              "Authorization"
+            ] = `Digest username="${authConfig.username}", password="${authConfig.password}"`;
+          }
+          break;
+
+        case "oauth2":
+          // OAuth2 typically requires a separate token exchange flow
+          // This would need to be implemented based on your OAuth flow
+          if (authConfig.accessToken) {
+            transformedHeaders[
+              "Authorization"
+            ] = `Bearer ${authConfig.accessToken}`;
+          }
+          break;
+      }
+    }
+
+    // Handle API key in query params
+    let finalUrl = request.url;
+    if (
+      authConfig &&
+      authConfig.type === "apikey" &&
+      authConfig.addTo === "query" &&
+      authConfig.key &&
+      authConfig.value
+    ) {
+      try {
+        const url = new URL(request.url);
+        url.searchParams.set(authConfig.key, authConfig.value);
+        finalUrl = url.toString();
+      } catch (error) {
+        console.error("Error adding API key to URL:", error);
+      }
+    }
+
     const response = await sendApiRequest({
       method: request.method,
-      url: request.url,
+      url: finalUrl,
       headers: transformedHeaders,
       body: request.body,
     });
 
     setResponse(response);
+    setIsResponseLoading(false);
 
-    console.log(response);
+    console.log("Request sent with headers:", transformedHeaders);
+    console.log("Response:", response);
   };
 
   const handleMethodChange = (method: string) => {

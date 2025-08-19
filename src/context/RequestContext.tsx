@@ -9,6 +9,7 @@ type RequestContextType = {
   setResponse: React.Dispatch<React.SetStateAction<ApiResponse | null>>;
   isLoading: boolean;
   isResponseLoading: boolean;
+  setIsResponseLoading: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const RequestContext = createContext<RequestContextType | undefined>(undefined);
@@ -22,6 +23,20 @@ export const RequestProvider: React.FC<{ children: React.ReactNode }> = ({
     headers: [],
     params: [],
     body: { type: "raw", content: "" },
+    auth: {
+      type: "none",
+      token: "",
+      username: "",
+      password: "",
+      key: "",
+      value: "",
+      addTo: "header",
+      clientId: "",
+      clientSecret: "",
+      accessTokenUrl: "",
+      scope: "",
+      realm: "",
+    },
   });
   const [response, setResponse] = useState<ApiResponse | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -38,6 +53,7 @@ export const RequestProvider: React.FC<{ children: React.ReactNode }> = ({
         setResponse,
         isLoading,
         isResponseLoading,
+        setIsResponseLoading,
       }}
     >
       {children}

@@ -23,6 +23,17 @@ export const GET = asyncTryCatchWrapper(
         const foldersWithRequests = await Promise.all(
           folders.map(async (folder) => {
             const requests = await Request.find({ folder: folder._id }).lean();
+            const updatedRequests = requests.map((request) => ({
+              ...request,
+              collectionMeta: {
+                id: collection._id,
+                name: collection.name,
+              },
+              folderMeta: {
+                id: folder._id,
+                name: folder.name,
+              },
+            }));
             return {
               ...folder,
               requests,

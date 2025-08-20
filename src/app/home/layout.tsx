@@ -6,7 +6,7 @@ import React from "react";
 
 function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="h-[100vh] overflow-hidden">
+    <div className="h-[100vh] overflow-auto">
       <Header />
       <main className="flex">
         <SideBar />

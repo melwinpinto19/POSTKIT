@@ -3,7 +3,7 @@ import { asyncTryCatchWrapper } from "@/utils";
 import { ObjectId } from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
 
-export const POST = asyncTryCatchWrapper(
+export const GET = asyncTryCatchWrapper(
   async (request: NextRequest, userId: ObjectId) => {
     // get the user data :
     const user = await User.findById(userId).select("-password");

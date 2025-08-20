@@ -1,4 +1,3 @@
-import { connectDB } from "@/lib/db";
 import User from "@/models/user";
 import { asyncTryCatchWrapper, CustomApiError } from "@/utils";
 import { NextRequest, NextResponse } from "next/server";
@@ -31,7 +30,8 @@ export const POST = asyncTryCatchWrapper(async (request: NextRequest) => {
   // make the jwt token :
   const token = jwt.sign(
     { id: newUser._id, email: newUser.email },
-    process.env.JWT_SECRET_TOKEN!
+    process.env.JWT_SECRET_TOKEN!,
+    { expiresIn: "1h" }
   );
 
   // return the response:

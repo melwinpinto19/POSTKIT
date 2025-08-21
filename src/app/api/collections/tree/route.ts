@@ -5,6 +5,7 @@ import { Folder } from "@/models/folder";
 import { Request } from "@/models/request";
 import User from "@/models/user";
 import { asyncTryCatchWrapper } from "@/utils";
+import { url } from "inspector";
 
 export const GET = asyncTryCatchWrapper(
   async (req: NextRequest, userId: ObjectId) => {
@@ -24,7 +25,10 @@ export const GET = asyncTryCatchWrapper(
           folders.map(async (folder) => {
             const requests = await Request.find({ folder: folder._id }).lean();
             const updatedRequests = requests.map((request) => ({
-              ...request,
+              _id: request._id.toString(),
+              name: request.name,
+              url: request.url,
+              method: request.method,
               collectionMeta: {
                 id: collection._id,
                 name: collection.name,
@@ -35,14 +39,17 @@ export const GET = asyncTryCatchWrapper(
               },
             }));
             return {
-              ...folder,
-              requests,
+              _id: folder._id,
+              name: folder.name,
+              requests: updatedRequests,
             };
           })
         );
 
         return {
-          ...collection,
+          _id: collection._id,
+          name: collection.name,
+          description: collection.description,
           folders: foldersWithRequests,
         };
       })

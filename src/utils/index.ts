@@ -6,7 +6,10 @@ import { connectDB } from "@/lib/db";
 const publicAPIRoutes = ["/api/users/login", "/api/users/register"];
 
 export const asyncTryCatchWrapper = (func: any) => {
-  const wrapperFunction = async (request: NextRequest) => {
+  const wrapperFunction = async (
+    request: NextRequest,
+    context?: { params: { [key: string]: string } }
+  ) => {
     try {
       // Connect to the database
       await connectDB();
@@ -22,7 +25,7 @@ export const asyncTryCatchWrapper = (func: any) => {
         throw new CustomApiError("User is not authenticated", 401);
       }
 
-      return await func(request, userId);
+      return await func(request, userId, context);
     } catch (error) {
       if (error instanceof CustomApiError)
         return NextResponse.json(

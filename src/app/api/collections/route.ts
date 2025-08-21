@@ -1,36 +1,25 @@
 import { Collection } from "@/models/collection";
 import { asyncTryCatchWrapper, CustomApiError } from "@/utils";
-import { ObjectId } from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
+import mongoose from "mongoose";
 
-export const POST = asyncTryCatchWrapper(
-  async (request: NextRequest, userId: ObjectId) => {
-    const { name, description } = await request.json();
+// Create Collection
+export const POST = asyncTryCatchWrapper(async (req: NextRequest, userId: mongoose.Types.ObjectId) => {
+  const { name, description } = await req.json();
+  if (!name) throw new CustomApiError("Name is required", 400);
 
-    // Validate request body
-    if (!name || !description) {
-      throw new CustomApiError("Name and description are required", 400);
-    }
+  const collection = await Collection.create({
+    name,
+    description,
+    createdBy: userId,
+  });
 
-    // Create a new collection
-    const collection = await Collection.create({
-      name,
-      description,
-      createdBy: userId,
-    });
+  return NextResponse.json(collection, { status: 201 });
+});
 
-    // Check if collection was created successfully
-    if (!collection) {
-      throw new CustomApiError("Failed to create collection", 500);
-    }
+// Get All Collections
+export const GET = asyncTryCatchWrapper(async (_req: NextRequest, userId: mongoose.Types.ObjectId) => {
+  const collections = await Collection.find({ createdBy: userId }).lean();
+  return NextResponse.json(collections, { status: 200 });
+});
 
-    // Return the created collection
-    return NextResponse.json(
-      {
-        collection,
-        message: "Collection created successfully",
-      },
-      { status: 201, statusText: "Collection created successfully" }
-    );
-  }
-);

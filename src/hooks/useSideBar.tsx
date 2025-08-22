@@ -1,5 +1,6 @@
 "use client";
 import { createCollection, updateCollection } from "@/api/collection";
+import { createFolder, updateFolder } from "@/api/folder";
 import { getSidebarItems } from "@/api/sidebar";
 import { Collection, TreeItem } from "@/types/sidebar";
 import React, { useEffect, useState } from "react";
@@ -27,7 +28,14 @@ function useSideBar() {
     setCollections([...collections, newCollection]);
   };
 
-  const handleCreateFolder = (collectionId: string) => {
+  const handleCreateFolder = async (collectionId: string) => {
+    // Create the folder in the backend :
+    const response = await createFolder("New Folder", collectionId);
+
+    // Check if the folder creation was successful :
+    if (!response.success) return;
+
+    // Update the local state :
     setCollections(
       collections.map((collection) =>
         collection._id === collectionId
@@ -36,8 +44,8 @@ function useSideBar() {
               folders: [
                 ...collection.folders,
                 {
-                  _id: `folder${Date.now()}`,
-                  name: "New Folder",
+                  _id: response.data._id,
+                  name: response.data.name,
                   requests: [],
                 },
               ],
@@ -98,6 +106,46 @@ function useSideBar() {
     }
   };
 
+  //  rename functions :
+
+  const handleCollectionRename = async (id: string, newName: string) => {
+    // Find the collection being renamed :
+    const collection = collections.find((c) => c._id === id);
+
+    // Update the collection name in the backend :
+    const response = await updateCollection(
+      id,
+      newName,
+      collection?.description || ""
+    );
+
+    // Check if the update was successful :
+    if (!response.success) return;
+
+    // Update the local state :
+    setCollections(
+      collections.map((c) => (c._id === id ? { ...c, name: newName } : c))
+    );
+  };
+
+  const handleFolderRename = async (id: string, newName: string) => {
+    // Update the folder name in the backend :
+    const response = await updateFolder(id, newName);
+
+    // Check if the update was successful :
+    if (!response.success) return;
+
+    // Update the local state :
+    setCollections(
+      collections.map((c) => ({
+        ...c,
+        folders: c.folders.map((f) =>
+          f._id === id ? { ...f, name: newName } : f
+        ),
+      }))
+    );
+  };
+
   const handleRename = async (
     type: string,
     id: string,
@@ -105,32 +153,9 @@ function useSideBar() {
     parentId?: string
   ) => {
     if (type === "collection") {
-      // Find the collection being renamed :
-      const collection = collections.find((c) => c._id === id);
-
-      // Update the collection name in the backend :
-      const response = await updateCollection(
-        id,
-        newName,
-        collection?.description || ""
-      );
-
-      // Check if the update was successful :
-      if (!response.success) return;
-
-      // Update the local state :
-      setCollections(
-        collections.map((c) => (c._id === id ? { ...c, name: newName } : c))
-      );
+      await handleCollectionRename(id, newName);
     } else if (type === "folder") {
-      setCollections(
-        collections.map((collection) => ({
-          ...collection,
-          folders: collection.folders.map((f) =>
-            f._id === id ? { ...f, name: newName } : f
-          ),
-        }))
-      );
+      await handleFolderRename(id, newName);
     } else if (type === "request") {
       setCollections(
         collections.map((collection) => ({

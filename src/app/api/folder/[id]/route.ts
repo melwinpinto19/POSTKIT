@@ -24,7 +24,7 @@ export const GET = asyncTryCatchWrapper(
 );
 
 // Update Folder
-export const PATCH = asyncTryCatchWrapper(
+export const PUT = asyncTryCatchWrapper(
   async (
     req: NextRequest,
     userId: mongoose.Types.ObjectId,

@@ -23,7 +23,7 @@ export const GET = asyncTryCatchWrapper(
 );
 
 // Update Collection
-export const PATCH = asyncTryCatchWrapper(
+export const PUT = asyncTryCatchWrapper(
   async (
     req: NextRequest,
     userId: mongoose.Types.ObjectId,

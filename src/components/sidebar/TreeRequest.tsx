@@ -1,6 +1,8 @@
+"use client";
 import React, { useState } from "react";
 import TreeContextMenu from "@/components/sidebar/TreeContextMenu";
 import { TreeItem } from "@/types/sidebar";
+import { useRouter } from "next/navigation";
 
 interface Request {
   _id: string;
@@ -16,7 +18,12 @@ interface TreeRequestProps {
   selectedItem: { type: string; id: string } | null;
   onSelect: (item: { type: TreeItem; id: string }) => void;
   onDelete: (type: TreeItem, id: string, parentId?: string) => void;
-  onRename: (type: TreeItem, id: string, newName: string, parentId?: string) => void;
+  onRename: (
+    type: TreeItem,
+    id: string,
+    newName: string,
+    parentId?: string
+  ) => void;
 }
 
 const methodColors: Record<string, string> = {
@@ -45,8 +52,10 @@ export default function TreeRequest({
     id: string;
     parentId?: string;
   } | null>(null);
+  const router = useRouter();
 
-  const isSelected = selectedItem?.type === 'request' && selectedItem?.id === request._id;
+  const isSelected =
+    selectedItem?.type === "request" && selectedItem?.id === request._id;
 
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -54,27 +63,32 @@ export default function TreeRequest({
     setContextMenu({
       x: e.clientX,
       y: e.clientY,
-      type: 'request',
+      type: "request",
       id: request._id,
       parentId: folderId,
     });
   };
 
   const handleClick = () => {
-    onSelect({ type: 'request', id: request._id });
+    onSelect({ type: "request", id: request._id });
+    router.push(`/home/requests/${request._id}`);
   };
 
   return (
     <>
       <div
         className={`flex items-center gap-2 px-2 py-1.5 rounded hover:bg-muted cursor-pointer ml-6 ${
-          isSelected ? 'bg-muted' : ''
+          isSelected ? "bg-muted" : ""
         }`}
         onClick={handleClick}
         onContextMenu={handleContextMenu}
       >
         <div className="flex items-center gap-2 flex-1 min-w-0">
-          <span className={`text-xs font-mono font-semibold ${methodColors[request.method]}`}>
+          <span
+            className={`text-xs font-mono font-semibold ${
+              methodColors[request.method]
+            }`}
+          >
             {request.method}
           </span>
           <div className="flex-1 min-w-0">

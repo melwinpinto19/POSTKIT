@@ -1,4 +1,5 @@
 export interface RequestType {
+  name: string;
   method: RequestMethod;
   url: string;
   headers: Array<{ key: string; value: string }>;
@@ -52,9 +53,4 @@ export interface AuthConfig {
   realm: string;
 }
 
-export type AuthType =
-  | "none"
-  | "bearer"
-  | "basic"
-  | "apikey"
-  | "oauth2"
+export type AuthType = "none" | "bearer" | "basic" | "apikey" | "oauth2";

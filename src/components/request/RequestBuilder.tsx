@@ -4,18 +4,13 @@ import RequestBreadcrumb from "@/components/request/RequestBreadcrumb";
 import RequestTopBar from "@/components/request/RequestTopBar";
 import RequestTabs from "./tabs/RequestTabs";
 import RequestResponse from "./RequestResponse";
+import SaveRequestButton from "./SaveRequest";
+import Request from "./Request";
 
-export default function RequestBuilder() {
+export default function RequestBuilder({ id }: { id: string }) {
   return (
-    <RequestProvider>
-      <div className="w-full max-w-6xl mx-auto p-4 overflow-auto">
-        <RequestBreadcrumb />
-        <div className="mt-4 rounded-lg border bg-background shadow-sm">
-          <RequestTopBar />
-          <RequestTabs />
-          <RequestResponse />
-        </div>
-      </div>
+    <RequestProvider id={id}>
+      <Request />
     </RequestProvider>
   );
 }

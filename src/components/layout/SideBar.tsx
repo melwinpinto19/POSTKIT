@@ -17,10 +17,11 @@ export default function Sidebar() {
     handleRename,
     selectedItem,
     setSelectedItem,
+    getBreadcrumbs,
   } = useSideBar();
 
   return (
-    <div className="w-80 border-r bg-background h-full flex flex-col">
+    <div className="w-80 min-w-80 border-r bg-background h-full flex flex-col">
       {/* Header */}
       <div className="p-4 border-b">
         <div className="flex items-center justify-between">
@@ -76,6 +77,7 @@ export default function Sidebar() {
                 onCreateRequest={handleCreateRequest}
                 onDelete={handleDelete}
                 onRename={handleRename}
+                getBreadcrumbs={getBreadcrumbs}
               />
             ))}
           </div>

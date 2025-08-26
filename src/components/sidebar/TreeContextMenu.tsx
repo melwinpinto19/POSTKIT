@@ -200,7 +200,7 @@ export default function TreeContextMenu({
             {/* Delete option */}
             <button
               onClick={handleDelete}
-              className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted text-destructive hover:bg-destructive/10 w-full text-left"
+              className="flex items-center gap-2 px-3 py-2 text-sm  text-destructive hover:bg-destructive/10 w-full text-left"
             >
               <Trash2 className="h-4 w-4" />
               Delete
@@ -211,14 +211,7 @@ export default function TreeContextMenu({
 
       {/* Delete Confirmation Dialog */}
       {/* Delete Confirmation Dialog */}
-      <AlertDialog
-        open={showDeleteDialog}
-        onOpenChange={(open) => {
-          if (!open) {
-            setShowDeleteDialog(false);
-          }
-        }}
-      >
+      <AlertDialog open={showDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{getDeleteTitle()}</AlertDialogTitle>

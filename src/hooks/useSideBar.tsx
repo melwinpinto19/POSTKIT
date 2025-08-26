@@ -1,6 +1,7 @@
 "use client";
 import { createCollection, updateCollection } from "@/api/collection";
 import { createFolder, updateFolder } from "@/api/folder";
+import { createRequest } from "@/api/request";
 import { getSidebarItems } from "@/api/sidebar";
 import { Collection, TreeItem } from "@/types/sidebar";
 import React, { useEffect, useState } from "react";
@@ -55,7 +56,26 @@ function useSideBar() {
     );
   };
 
-  const handleCreateRequest = (collectionId: string, folderId: string) => {
+  const handleCreateRequest = async (
+    collectionId: string,
+    folderId: string
+  ) => {
+    const response = await createRequest({
+      name: "New Request",
+      url: "https://example.com",
+      folder: folderId,
+      method: "GET",
+    });
+
+    if (!response.success) return;
+
+    const newRequest = {
+      _id: response.data._id,
+      name: response.data.name,
+      url: response.data.url,
+      method: response.data.method,
+    };
+
     setCollections(
       collections.map((collection) =>
         collection._id === collectionId
@@ -65,15 +85,7 @@ function useSideBar() {
                 folder._id === folderId
                   ? {
                       ...folder,
-                      requests: [
-                        ...folder.requests,
-                        {
-                          _id: `request${Date.now()}`,
-                          name: "New Request",
-                          method: "GET",
-                          url: "https://api.example.com",
-                        },
-                      ],
+                      requests: [...folder.requests, newRequest],
                     }
                   : folder
               ),

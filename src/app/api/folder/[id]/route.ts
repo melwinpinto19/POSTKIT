@@ -1,4 +1,5 @@
 import { Folder } from "@/models/folder";
+import { Request } from "@/models/request";
 import { asyncTryCatchWrapper, CustomApiError } from "@/utils";
 import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
@@ -48,6 +49,10 @@ export const DELETE = asyncTryCatchWrapper(
     userId: mongoose.Types.ObjectId,
     { params }: Context
   ) => {
+    // Delete all requests belonging to this folder
+    await Request.deleteMany({ folder: params.id, createdBy: userId });
+
+    // Delete the folder itself
     const deleted = await Folder.findOneAndDelete({
       _id: params.id,
       createdBy: userId,

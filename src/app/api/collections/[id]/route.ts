@@ -1,4 +1,6 @@
 import { Collection } from "@/models/collection";
+import { Folder } from "@/models/folder";
+import { Request } from "@/models/request";
 import { asyncTryCatchWrapper, CustomApiError } from "@/utils";
 import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
@@ -47,11 +49,25 @@ export const DELETE = asyncTryCatchWrapper(
     userId: mongoose.Types.ObjectId,
     { params }: Context
   ) => {
+    // Find all folders belonging to this collection
+    const folders = await Folder.find({ collectionName: params.id, createdBy: userId }).lean();
+
+    // Delete all requests belonging to these folders
+    const folderIds = folders.map(f => f._id);
+    if (folderIds.length > 0) {
+      await Request.deleteMany({ folder: { $in: folderIds }, createdBy: userId });
+    }
+
+    // Delete all folders belonging to this collection
+    await Folder.deleteMany({ collectionName: params.id, createdBy: userId });
+
+    // Delete the collection itself
     const deleted = await Collection.findOneAndDelete({
       _id: params.id,
       createdBy: userId,
     });
     if (!deleted) throw new CustomApiError("Collection not found", 404);
+
     return NextResponse.json({ message: "Deleted" }, { status: 200 });
   }
 );

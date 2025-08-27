@@ -1,7 +1,7 @@
 "use client";
-import { createCollection, updateCollection } from "@/api/collection";
-import { createFolder, updateFolder } from "@/api/folder";
-import { createRequest } from "@/api/request";
+import { createCollection, updateCollection, deleteCollection } from "@/api/collection";
+import { createFolder, updateFolder, deleteFolder } from "@/api/folder";
+import { createRequest, updateRequest, deleteRequest } from "@/api/request";
 import { getSidebarItems } from "@/api/sidebar";
 import { Collection, TreeItem } from "@/types/sidebar";
 import React, { useEffect, useState } from "react";
@@ -95,31 +95,52 @@ function useSideBar() {
     );
   };
 
-  const handleDelete = (type: string, id: string, parentId?: string) => {
+  // Delete functions with API calls
+  const handleCollectionDelete = async (id: string) => {
+    const response = await deleteCollection(id);
+    if (!response.success) return;
+
+    setCollections(collections.filter((c) => c._id !== id));
+  };
+
+  const handleFolderDelete = async (id: string) => {
+    const response = await deleteFolder(id);
+    if (!response.success) return;
+
+    setCollections(
+      collections.map((collection) => ({
+        ...collection,
+        folders: collection.folders.filter((f) => f._id !== id),
+      }))
+    );
+  };
+
+  const handleRequestDelete = async (id: string) => {
+    const response = await deleteRequest(id);
+    if (!response.success) return;
+
+    setCollections(
+      collections.map((collection) => ({
+        ...collection,
+        folders: collection.folders.map((folder) => ({
+          ...folder,
+          requests: folder.requests.filter((r) => r._id !== id),
+        })),
+      }))
+    );
+  };
+
+  const handleDelete = async (type: string, id: string, parentId?: string) => {
     if (type === "collection") {
-      setCollections(collections.filter((c) => c._id !== id));
+      await handleCollectionDelete(id);
     } else if (type === "folder") {
-      setCollections(
-        collections.map((collection) => ({
-          ...collection,
-          folders: collection.folders.filter((f) => f._id !== id),
-        }))
-      );
+      await handleFolderDelete(id);
     } else if (type === "request") {
-      setCollections(
-        collections.map((collection) => ({
-          ...collection,
-          folders: collection.folders.map((folder) => ({
-            ...folder,
-            requests: folder.requests.filter((r) => r._id !== id),
-          })),
-        }))
-      );
+      await handleRequestDelete(id);
     }
   };
 
-  //  rename functions :
-
+  // Rename functions with API calls
   const handleCollectionRename = async (id: string, newName: string) => {
     // Find the collection being renamed :
     const collection = collections.find((c) => c._id === id);
@@ -158,6 +179,27 @@ function useSideBar() {
     );
   };
 
+  const handleRequestRename = async (id: string, newName: string) => {
+    // Update the request name in the backend :
+    const response = await updateRequest(id, { name: newName });
+
+    // Check if the update was successful :
+    if (!response.success) return;
+
+    // Update the local state :
+    setCollections(
+      collections.map((collection) => ({
+        ...collection,
+        folders: collection.folders.map((folder) => ({
+          ...folder,
+          requests: folder.requests.map((r) =>
+            r._id === id ? { ...r, name: newName } : r
+          ),
+        })),
+      }))
+    );
+  };
+
   const handleRename = async (
     type: string,
     id: string,
@@ -169,17 +211,7 @@ function useSideBar() {
     } else if (type === "folder") {
       await handleFolderRename(id, newName);
     } else if (type === "request") {
-      setCollections(
-        collections.map((collection) => ({
-          ...collection,
-          folders: collection.folders.map((folder) => ({
-            ...folder,
-            requests: folder.requests.map((r) =>
-              r._id === id ? { ...r, name: newName } : r
-            ),
-          })),
-        }))
-      );
+      await handleRequestRename(id, newName);
     }
   };
 

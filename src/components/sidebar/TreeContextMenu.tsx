@@ -10,8 +10,10 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { TreeItem } from "@/types/sidebar";
+import { Button } from "@/components/ui/button";
 
 interface TreeContextMenuProps {
   x: number;
@@ -51,14 +53,15 @@ export default function TreeContextMenu({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+      // Only close if dialog is not open
+      if (!showDeleteDialog && menuRef.current && !menuRef.current.contains(event.target as Node)) {
         onClose();
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [onClose]);
+  }, [onClose, showDeleteDialog]);
 
   useEffect(() => {
     if (isRenaming && inputRef.current) {
@@ -91,7 +94,6 @@ export default function TreeContextMenu({
   };
 
   const handleDeleteConfirm = () => {
-    console.log(`Deleting ${type} with id ${id} and parentId ${parentId}`);
     onDelete(type, id, parentId);
     setShowDeleteDialog(false);
     onClose();
@@ -200,7 +202,7 @@ export default function TreeContextMenu({
             {/* Delete option */}
             <button
               onClick={handleDelete}
-              className="flex items-center gap-2 px-3 py-2 text-sm  text-destructive hover:bg-destructive/10 w-full text-left"
+              className="flex items-center gap-2 px-3 py-2 text-sm text-destructive hover:bg-destructive/10 w-full text-left"
             >
               <Trash2 className="h-4 w-4" />
               Delete
@@ -209,9 +211,8 @@ export default function TreeContextMenu({
         )}
       </div>
 
-      {/* Delete Confirmation Dialog */}
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog open={showDeleteDialog}>
+      {/* AlertDialog rendered outside the menu */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{getDeleteTitle()}</AlertDialogTitle>
@@ -222,10 +223,7 @@ export default function TreeContextMenu({
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={(e) => {
-                e.preventDefault(); // Prevent default closing behavior
-                handleDeleteConfirm();
-              }}
+              onClick={handleDeleteConfirm}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               Delete

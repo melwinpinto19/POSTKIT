@@ -17,7 +17,6 @@ export default function Sidebar() {
     handleRename,
     selectedItem,
     setSelectedItem,
-    getBreadcrumbs,
   } = useSideBar();
 
   return (
@@ -77,7 +76,6 @@ export default function Sidebar() {
                 onCreateRequest={handleCreateRequest}
                 onDelete={handleDelete}
                 onRename={handleRename}
-                getBreadcrumbs={getBreadcrumbs}
               />
             ))}
           </div>

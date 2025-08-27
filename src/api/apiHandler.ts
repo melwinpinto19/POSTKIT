@@ -6,7 +6,7 @@ import axios, {
 } from "axios";
 
 // Response wrapper interface
-interface ApiResponse<T = any> {
+export interface ApiResponse<T = any> {
   status: number | null;
   data: T;
   statusText: string;

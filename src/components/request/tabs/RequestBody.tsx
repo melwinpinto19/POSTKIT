@@ -7,7 +7,7 @@ import { RequestBodyType } from "@/types/request";
 import JsonPreviewEditor from "../shared/JsonPreviewEditor";
 
 export default function RequestBody() {
-  const { request, setRequest } = useRequest();
+  const { request, setRequest, edited, setEdited } = useRequest();
   const body = request.body || { type: "raw", content: "" };
 
   const updateBodyType = (type: string) => {
@@ -15,6 +15,7 @@ export default function RequestBody() {
       ...prev,
       body: { ...body, type: type as RequestBodyType, content: "" },
     }));
+    if (!edited) setEdited(true);
   };
 
   const updateBodyContent = (content: string) => {
@@ -22,6 +23,7 @@ export default function RequestBody() {
       ...prev,
       body: { ...body, content: content as RequestBodyType },
     }));
+    if (!edited) setEdited(true);
   };
 
   return (

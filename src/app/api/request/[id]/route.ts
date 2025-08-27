@@ -2,12 +2,13 @@ import { Request } from "@/models/request";
 import { asyncTryCatchWrapper, CustomApiError } from "@/utils";
 import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
+import { Folder } from "@/models/folder";
+import { Collection } from "@/models/collection";
 
 interface Context {
   params: { [key: string]: string };
 }
 
-// Get Request by ID
 export const GET = asyncTryCatchWrapper(
   async (
     _req: NextRequest,
@@ -17,14 +18,24 @@ export const GET = asyncTryCatchWrapper(
     const requestDoc = await Request.findOne({
       _id: params.id,
       createdBy: userId,
-    }).lean();
+    })
+      .lean()
+      .populate({
+        path: "folder",
+        select: "name collectionName",
+        populate: {
+          path: "collectionName",
+          select: "name",
+        },
+      });
     if (!requestDoc) throw new CustomApiError("Request not found", 404);
+
     return NextResponse.json(requestDoc, { status: 200 });
   }
 );
 
 // Update Request
-export const PATCH = asyncTryCatchWrapper(
+export const PUT = asyncTryCatchWrapper(
   async (
     req: NextRequest,
     userId: mongoose.Types.ObjectId,

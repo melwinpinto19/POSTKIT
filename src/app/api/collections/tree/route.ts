@@ -29,14 +29,14 @@ export const GET = asyncTryCatchWrapper(
               name: request.name,
               url: request.url,
               method: request.method,
-              collectionMeta: {
-                id: collection._id,
-                name: collection.name,
-              },
-              folderMeta: {
-                id: folder._id,
-                name: folder.name,
-              },
+              // collectionMeta: {
+              //   id: collection._id,
+              //   name: collection.name,
+              // },
+              // folderMeta: {
+              //   id: folder._id,
+              //   name: folder.name,
+              // },
             }));
             return {
               _id: folder._id,

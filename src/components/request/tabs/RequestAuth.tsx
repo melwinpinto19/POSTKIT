@@ -14,7 +14,7 @@ import { Key, Shield, User, Lock } from "lucide-react";
 import { AuthConfig, AuthType } from "@/types/request";
 
 export default function RequestAuth() {
-  const { request, setRequest } = useRequest();
+  const { request, setRequest, edited, setEdited } = useRequest();
 
   // Get auth config from request or initialize with default
   const authConfig: AuthConfig = (request as any).auth || { type: "none" };
@@ -24,6 +24,7 @@ export default function RequestAuth() {
       ...prev,
       auth: { ...authConfig, ...updates },
     }));
+    if (!edited) setEdited(true);
   };
 
   const authTypes = [
@@ -175,8 +176,8 @@ export default function RequestAuth() {
             </p>
           </div>
         );
-      
-        default:
+
+      default:
         return (
           <div className="text-center py-8 text-muted-foreground">
             <Shield className="h-12 w-12 mx-auto mb-4 opacity-50" />

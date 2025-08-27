@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, Trash2 } from "lucide-react";
 
 export default function RequestParams() {
-  const { request, setRequest } = useRequest();
+  const { request, setRequest, edited, setEdited } = useRequest();
   const params = request.params || [];
 
   const updateRequestURL = (params: Array<Record<string, string>>) => {
@@ -34,6 +34,7 @@ export default function RequestParams() {
       params: updatedParams,
     }));
     updateRequestURL(params);
+    if (!edited) setEdited(true);
   };
 
   const removeParam = (index: number) => {
@@ -43,6 +44,7 @@ export default function RequestParams() {
       params: updatedParams,
     }));
     updateRequestURL(updatedParams);
+    if (!edited) setEdited(true);
   };
 
   const updateParam = (
@@ -58,6 +60,7 @@ export default function RequestParams() {
       params: updatedParams,
     }));
     updateRequestURL(updatedParams);
+    if (!edited) setEdited(true);
   };
 
   return (

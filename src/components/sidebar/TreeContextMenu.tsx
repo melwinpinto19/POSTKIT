@@ -10,8 +10,10 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { TreeItem } from "@/types/sidebar";
+import { Button } from "@/components/ui/button";
 
 interface TreeContextMenuProps {
   x: number;
@@ -21,7 +23,12 @@ interface TreeContextMenuProps {
   parentId?: string;
   onClose: () => void;
   onDelete: (type: TreeItem, id: string, parentId?: string) => void;
-  onRename: (type: TreeItem, id: string, newName: string, parentId?: string) => void;
+  onRename: (
+    type: TreeItem,
+    id: string,
+    newName: string,
+    parentId?: string
+  ) => void;
   onCreateFolder?: (collectionId: string) => void;
   onCreateRequest?: (collectionId: string, folderId: string) => void;
 }
@@ -46,14 +53,15 @@ export default function TreeContextMenu({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+      // Only close if dialog is not open
+      if (!showDeleteDialog && menuRef.current && !menuRef.current.contains(event.target as Node)) {
         onClose();
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [onClose]);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [onClose, showDeleteDialog]);
 
   useEffect(() => {
     if (isRenaming && inputRef.current) {
@@ -73,9 +81,9 @@ export default function TreeContextMenu({
   };
 
   const handleRenameKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleRenameSubmit();
-    } else if (e.key === 'Escape') {
+    } else if (e.key === "Escape") {
       setIsRenaming(false);
       setNewName("");
     }
@@ -107,27 +115,27 @@ export default function TreeContextMenu({
 
   const getDeleteTitle = () => {
     switch (type) {
-      case 'collection':
-        return 'Delete Collection';
-      case 'folder':
-        return 'Delete Folder';
-      case 'request':
-        return 'Delete Request';
+      case "collection":
+        return "Delete Collection";
+      case "folder":
+        return "Delete Folder";
+      case "request":
+        return "Delete Request";
       default:
-        return 'Delete Item';
+        return "Delete Item";
     }
   };
 
   const getDeleteDescription = () => {
     switch (type) {
-      case 'collection':
-        return 'This action cannot be undone. This will permanently delete the collection and all its folders and requests.';
-      case 'folder':
-        return 'This action cannot be undone. This will permanently delete the folder and all its requests.';
-      case 'request':
-        return 'This action cannot be undone. This will permanently delete this request.';
+      case "collection":
+        return "This action cannot be undone. This will permanently delete the collection and all its folders and requests.";
+      case "folder":
+        return "This action cannot be undone. This will permanently delete the folder and all its requests.";
+      case "request":
+        return "This action cannot be undone. This will permanently delete this request.";
       default:
-        return 'This action cannot be undone.';
+        return "This action cannot be undone.";
     }
   };
 
@@ -162,7 +170,7 @@ export default function TreeContextMenu({
         ) : (
           <>
             {/* Create options */}
-            {type === 'collection' && onCreateFolder && (
+            {type === "collection" && onCreateFolder && (
               <button
                 onClick={handleCreateFolder}
                 className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted w-full text-left"
@@ -171,8 +179,8 @@ export default function TreeContextMenu({
                 Add Folder
               </button>
             )}
-            
-            {type === 'folder' && onCreateRequest && (
+
+            {type === "folder" && onCreateRequest && (
               <button
                 onClick={handleCreateRequest}
                 className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted w-full text-left"
@@ -181,7 +189,7 @@ export default function TreeContextMenu({
                 Add Request
               </button>
             )}
-            
+
             {/* Rename option */}
             <button
               onClick={handleRename}
@@ -190,11 +198,11 @@ export default function TreeContextMenu({
               <Edit3 className="h-4 w-4" />
               Rename
             </button>
-            
+
             {/* Delete option */}
             <button
               onClick={handleDelete}
-              className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted text-destructive hover:bg-destructive/10 w-full text-left"
+              className="flex items-center gap-2 px-3 py-2 text-sm text-destructive hover:bg-destructive/10 w-full text-left"
             >
               <Trash2 className="h-4 w-4" />
               Delete
@@ -203,7 +211,7 @@ export default function TreeContextMenu({
         )}
       </div>
 
-      {/* Delete Confirmation Dialog */}
+      {/* AlertDialog rendered outside the menu */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>

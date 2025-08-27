@@ -25,8 +25,14 @@ const httpMethods: { value: RequestMethod; color: string }[] = [
 ];
 
 export default function RequestTopBar() {
-  const { request, setRequest, setResponse, setIsResponseLoading } =
-    useRequest();
+  const {
+    request,
+    setRequest,
+    setResponse,
+    setIsResponseLoading,
+    edited,
+    setEdited,
+  } = useRequest();
 
   // const handleSend = async () => {
   //   console.log("Sending request:", request);
@@ -171,6 +177,7 @@ export default function RequestTopBar() {
       ...prev,
       method: method as RequestMethod,
     }));
+    if (!edited) setEdited(true);
   };
 
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -179,6 +186,7 @@ export default function RequestTopBar() {
       url: e.target.value,
     }));
     updateParams(e.target.value);
+    setEdited(true);
   };
 
   const updateParams = (requestURL: string) => {

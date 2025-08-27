@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, Trash2 } from "lucide-react";
 
 export default function RequestHeaders() {
-  const { request, setRequest } = useRequest();
+  const { request, setRequest, edited, setEdited } = useRequest();
   const headers = request.headers || [];
 
   const addHeader = () => {
@@ -13,6 +13,8 @@ export default function RequestHeaders() {
       ...prev,
       headers: [...headers, { key: "", value: "" }],
     }));
+
+    if (!edited) setEdited(true);
   };
 
   const removeHeader = (index: number) => {
@@ -20,15 +22,23 @@ export default function RequestHeaders() {
       ...prev,
       headers: headers.filter((_, i) => i !== index),
     }));
+
+    if (!edited) setEdited(true);
   };
 
-  const updateHeader = (index: number, field: "key" | "value", value: string) => {
+  const updateHeader = (
+    index: number,
+    field: "key" | "value",
+    value: string
+  ) => {
     setRequest((prev) => ({
       ...prev,
       headers: headers.map((header, i) =>
         i === index ? { ...header, [field]: value } : header
       ),
     }));
+
+    if (!edited) setEdited(true);
   };
 
   return (

@@ -1,11 +1,15 @@
 import { AxiosRequestHeaders } from "axios";
 import { ApiResponse, instance } from "./apiHandler";
 import { AuthFormData } from "@/types/auth";
-import { AuthResponse, UserProfileResponse } from "@/types/api/user";
+import {
+  AuthRequest,
+  AuthResponse,
+  UserProfileResponse,
+} from "@/types/api/user";
 
 // Login user
 export const loginUser = async (
-  data: AuthFormData
+  data: AuthRequest
 ): Promise<ApiResponse<AuthResponse>> => {
   return await instance.post(
     "/users/login",
@@ -17,7 +21,7 @@ export const loginUser = async (
 
 // Register user
 export const registerUser = async (
-  data: AuthFormData
+  data: AuthRequest
 ): Promise<ApiResponse<AuthResponse>> => {
   return await instance.post(
     "/users/register",

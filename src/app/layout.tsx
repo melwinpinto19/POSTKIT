@@ -3,6 +3,7 @@ import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import "./globals.css";
 
 import { Poppins } from "next/font/google";
+import { AuthProvider } from "@/context/AuthContext";
 
 // Load Poppins font with selected weights and subsets
 const poppins = Poppins({
@@ -28,7 +29,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {children}
+            <AuthProvider>{children}</AuthProvider>
           </ThemeProvider>
         </body>
       </html>

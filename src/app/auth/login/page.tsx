@@ -1,6 +1,7 @@
 "use client";
 import { loginUser } from "@/api/user";
 import AuthComponent from "@/components/auth/Auth";
+import { useAuth } from "@/context/AuthContext";
 import { AuthFormData } from "@/types/auth";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -8,6 +9,7 @@ import React, { useState } from "react";
 function Page() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { login } = useAuth();
 
   const handleAuth = async (data: AuthFormData) => {
     setIsLoading(true);
@@ -18,11 +20,8 @@ function Page() {
     });
 
     if (response.success) {
-      // set the user token :
-      localStorage.setItem("access_token", response.data.token);
-
-      // Redirect to dashboard
-      router.push("/home");
+      // login the user in the client:
+      login(data.email, response.data.token);
     } else {
       setIsLoading(false);
       throw new Error(response.data.message);

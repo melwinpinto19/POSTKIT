@@ -87,7 +87,7 @@ export default function TreeRequest({
           <span
             className={`text-xs font-mono font-semibold ${
               methodColors[request.method]
-            }`}
+            } inline-block w-[37px]`}
           >
             {request.method}
           </span>

@@ -1,5 +1,6 @@
 "use client";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
+import { Toaster } from "@/components/ui/sonner"
 import "./globals.css";
 
 import { Poppins } from "next/font/google";
@@ -30,6 +31,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <AuthProvider>{children}</AuthProvider>
+            <Toaster />
           </ThemeProvider>
         </body>
       </html>

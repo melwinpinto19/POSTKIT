@@ -18,12 +18,16 @@ export const GET = asyncTryCatchWrapper(
         // Find folders for this collection
         const folders = await Folder.find({
           collectionName: collection._id,
+          createdBy: userId,
         }).lean();
 
         // For each folder, find requests
         const foldersWithRequests = await Promise.all(
           folders.map(async (folder) => {
-            const requests = await Request.find({ folder: folder._id }).lean();
+            const requests = await Request.find({
+              folder: folder._id,
+              createdBy: userId,
+            }).lean();
             const updatedRequests = requests.map((request) => ({
               _id: request._id.toString(),
               name: request.name,

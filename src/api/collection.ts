@@ -40,3 +40,12 @@ export const deleteCollection = async (id: string) => {
     true
   );
 };
+
+export const exportCollection = async (id: string) => {
+  return await instance.get(
+    `/collections/export/${id}`,
+    {},
+    {} as AxiosRequestHeaders,
+    true
+  );
+};

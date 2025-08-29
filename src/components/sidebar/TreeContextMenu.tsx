@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
-import { Trash2, Edit3, FolderPlus, Plus } from "lucide-react";
+import { Trash2, Edit3, FolderPlus, Plus, Import } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,6 +14,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { TreeItem } from "@/types/sidebar";
 import { Button } from "@/components/ui/button";
+import { exportCollection } from "@/api/collection";
+import { createBlob, downloadFile, getBlobURL } from "@/utils/utils";
+import { toast } from "sonner";
 
 interface TreeContextMenuProps {
   x: number;
@@ -54,7 +57,11 @@ export default function TreeContextMenu({
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       // Only close if dialog is not open
-      if (!showDeleteDialog && menuRef.current && !menuRef.current.contains(event.target as Node)) {
+      if (
+        !showDeleteDialog &&
+        menuRef.current &&
+        !menuRef.current.contains(event.target as Node)
+      ) {
         onClose();
       }
     };
@@ -110,6 +117,23 @@ export default function TreeContextMenu({
     if (onCreateRequest) {
       onCreateRequest(parentId || id, id);
       onClose();
+    }
+  };
+
+  const handleExportCollection = async () => {
+    const response = await exportCollection(id);
+
+    if (response.success) {
+      const blob = createBlob(response.data, "application/json");
+      const url = getBlobURL(blob);
+      downloadFile(url, `collection_${id}.json`);
+      toast.success("Collection exported successfully", {
+        position: "top-right",
+      });
+    } else {
+      toast.error("Failed to export collection", {
+        position: "top-right",
+      });
     }
   };
 
@@ -187,6 +211,16 @@ export default function TreeContextMenu({
               >
                 <Plus className="h-4 w-4" />
                 Add Request
+              </button>
+            )}
+
+            {type == "collection" && (
+              <button
+                onClick={handleExportCollection}
+                className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted w-full text-left"
+              >
+                <Import className="h-4 w-4" />
+                Export Collection
               </button>
             )}
 

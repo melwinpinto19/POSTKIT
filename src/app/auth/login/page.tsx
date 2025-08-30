@@ -4,12 +4,12 @@ import AuthComponent from "@/components/auth/Auth";
 import { useAuth } from "@/context/AuthContext";
 import { AuthFormData } from "@/types/auth";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 function Page() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, user } = useAuth();
 
   const handleAuth = async (data: AuthFormData) => {
     setIsLoading(true);
@@ -27,6 +27,14 @@ function Page() {
       throw new Error(response.data.message);
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      router.push("/home");
+    }
+  }, [user, router]);
+
+  if (user) return null;
 
   return (
     <AuthComponent

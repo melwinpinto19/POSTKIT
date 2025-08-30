@@ -1,10 +1,15 @@
 "use client";
-import { createCollection, updateCollection, deleteCollection } from "@/api/collection";
+import {
+  createCollection,
+  updateCollection,
+  deleteCollection,
+  importCollection,
+} from "@/api/collection";
 import { createFolder, updateFolder, deleteFolder } from "@/api/folder";
 import { createRequest, updateRequest, deleteRequest } from "@/api/request";
 import { getSidebarItems } from "@/api/sidebar";
 import { Collection, TreeItem } from "@/types/sidebar";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 function useSideBar() {
   const [collections, setCollections] = useState<Collection[]>([]);
@@ -27,6 +32,60 @@ function useSideBar() {
       folders: [],
     };
     setCollections([...collections, newCollection]);
+  };
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileSelect = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.name.toLowerCase().endsWith(".json")) {
+      alert("Please select a JSON file");
+      return;
+    }
+
+    // Validate file size (optional - limit to 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      alert("File size should be less than 10MB");
+      return;
+    }
+
+    try {
+      const fileContent = await readFileAsText(file);
+      const importData = JSON.parse(fileContent);
+
+      const response = await importCollection(importData);
+      if (!response.success) {
+        throw new Error("Import failed");
+      } else {
+        const collection = response.data.data.collection;
+        setCollections((prevCollections) => [...prevCollections, collection]);
+      }
+
+      console.log("Import successful:", response.data);
+    } catch (error) {
+      console.log("Import error:", error);
+      alert("Failed to import collection. Please check the file format.");
+    }
+
+    // Reset file input
+    event.target.value = "";
+  };
+
+  const readFileAsText = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve(e.target?.result as string);
+      reader.onerror = (e) => reject(new Error("Failed to read file"));
+      reader.readAsText(file);
+    });
   };
 
   const handleCreateFolder = async (collectionId: string) => {
@@ -200,6 +259,16 @@ function useSideBar() {
     );
   };
 
+  const handleImportCollection = async (data: any) => {
+    const response = await importCollection(data);
+    if (!response.success) return;
+
+    setCollections((prevCollections) => [
+      ...prevCollections,
+      response.data.collection,
+    ]);
+  };
+
   const handleRename = async (
     type: string,
     id: string,
@@ -250,6 +319,9 @@ function useSideBar() {
     handleCreateRequest,
     selectedItem,
     setSelectedItem,
+    fileInputRef,
+    handleImportClick,
+    handleFileSelect,
   };
 }
 

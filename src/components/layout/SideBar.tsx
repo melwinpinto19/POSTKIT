@@ -23,7 +23,7 @@ export default function Sidebar() {
   } = useSideBar();
 
   return (
-    <div className="w-80 min-w-80 border-r bg-background h-full flex flex-col">
+    <div className="w-80 min-w-80 border-r bg-background h-[calc(100vh-64px)] flex flex-col">
       {/* Header */}
       <div className="p-4 border-b">
         <div className="flex items-center justify-between mb-3">

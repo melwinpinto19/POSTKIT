@@ -18,9 +18,9 @@ function Layout({ children }: { children: React.ReactNode }) {
   if (!user) return null;
 
   return (
-    <div className="h-[100vh] overflow-auto">
+    <div className="h-[100vh] overflow-hidden">
       <Header />
-      <main className="flex">
+      <main className="flex h-[calc(100vh-64px)] overflow-scroll">
         <SideBar />
         {children}
       </main>

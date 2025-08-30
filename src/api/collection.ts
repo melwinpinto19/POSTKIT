@@ -49,3 +49,12 @@ export const exportCollection = async (id: string) => {
     true
   );
 };
+
+export const importCollection = async (data: any) => {
+  return await instance.post(
+    "/collections/import",
+    data,
+    {} as AxiosRequestHeaders,
+    true
+  );
+};

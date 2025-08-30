@@ -1,5 +1,5 @@
-import React from "react";
-import { Plus } from "lucide-react";
+import React, { useRef } from "react";
+import { Plus, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import TreeCollection from "@/components/sidebar/TreeCollection";
@@ -17,13 +17,16 @@ export default function Sidebar() {
     handleRename,
     selectedItem,
     setSelectedItem,
+    fileInputRef,
+    handleImportClick,
+    handleFileSelect,
   } = useSideBar();
 
   return (
     <div className="w-80 min-w-80 border-r bg-background h-full flex flex-col">
       {/* Header */}
       <div className="p-4 border-b">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mb-3">
           <h2 className="font-semibold text-lg">Collections</h2>
           <Button
             variant="ghost"
@@ -35,6 +38,26 @@ export default function Sidebar() {
             <Plus className="h-4 w-4" />
           </Button>
         </div>
+
+        {/* Import Collection Button */}
+        <Button
+          variant="outline"
+          onClick={handleImportClick}
+          disabled={isLoading}
+          className="w-full justify-center gap-2 h-9 text-sm font-medium border-dashed border-muted-foreground/30 hover:border-primary/50 hover:bg-primary/5 transition-all duration-200"
+        >
+          <Upload className="h-4 w-4" />
+          <span>Import Collection</span>
+        </Button>
+
+        {/* Hidden File Input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".json,application/json"
+          onChange={handleFileSelect}
+          className="hidden"
+        />
       </div>
 
       {/* Tree Structure */}

@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
 
 interface Context {
-  params: { [key: string]: string };
+  params: Promise<{ [key: string]: string }>;
 }
 
 // Get Folder by ID
@@ -15,8 +15,9 @@ export const GET = asyncTryCatchWrapper(
     userId: mongoose.Types.ObjectId,
     { params }: Context
   ) => {
+    const { id } = await params;
     const folder = await Folder.findOne({
-      _id: params.id,
+      _id: id,
       createdBy: userId,
     });
     if (!folder) throw new CustomApiError("Folder not found", 404);
@@ -31,9 +32,10 @@ export const PUT = asyncTryCatchWrapper(
     userId: mongoose.Types.ObjectId,
     { params }: Context
   ) => {
+    const { id } = await params;
     const { name } = await req.json();
     const updated = await Folder.findOneAndUpdate(
-      { _id: params.id, createdBy: userId },
+      { _id: id, createdBy: userId },
       { name, updatedAt: Date.now() },
       { new: true }
     );
@@ -49,12 +51,13 @@ export const DELETE = asyncTryCatchWrapper(
     userId: mongoose.Types.ObjectId,
     { params }: Context
   ) => {
+    const { id } = await params;
     // Delete all requests belonging to this folder
-    await Request.deleteMany({ folder: params.id, createdBy: userId });
+    await Request.deleteMany({ folder: id, createdBy: userId });
 
     // Delete the folder itself
     const deleted = await Folder.findOneAndDelete({
-      _id: params.id,
+      _id: id,
       createdBy: userId,
     });
     if (!deleted) throw new CustomApiError("Folder not found", 404);

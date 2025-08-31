@@ -90,7 +90,7 @@ export default function RequestHeaders() {
         {headers.length === 0 && (
           <div className="text-center py-8 text-muted-foreground">
             <p>No headers added yet</p>
-            <p className="text-sm">Click "Add Header" to get started</p>
+            <p className="text-sm">Click &quot;Add Header&quot; to get started</p>
           </div>
         )}
       </div>

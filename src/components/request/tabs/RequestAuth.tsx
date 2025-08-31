@@ -50,7 +50,7 @@ export default function RequestAuth() {
                 onChange={(e) => updateAuth({ token: e.target.value })}
               />
               <p className="text-xs text-muted-foreground">
-                The token will be sent as "Authorization: Bearer {"{token}"}"
+                The token will be sent as &quot;Authorization: Bearer {"{token}"}&quot;
               </p>
             </div>
           </div>
@@ -81,8 +81,8 @@ export default function RequestAuth() {
               </div>
             </div>
             <p className="text-xs text-muted-foreground">
-              Credentials will be base64 encoded and sent as "Authorization:
-              Basic {"{encoded}"}"
+              Credentials will be base64 encoded and sent as &quot;Authorization:
+              Basic {"{encoded}"}&quot;
             </p>
           </div>
         );

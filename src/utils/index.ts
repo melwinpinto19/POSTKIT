@@ -8,7 +8,7 @@ const publicAPIRoutes = ["/api/users/login", "/api/users/register"];
 export const asyncTryCatchWrapper = (func: any) => {
   const wrapperFunction = async (
     request: NextRequest,
-    context?: { params: { [key: string]: string } }
+    context: any
   ) => {
     try {
       // Connect to the database

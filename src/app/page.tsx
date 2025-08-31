@@ -302,7 +302,7 @@ export default function LandingPage() {
                   ))}
                 </div>
                 <p className="text-muted-foreground mb-4">
-                  "{testimonial.content}"
+                  &quot;{testimonial.content}&quot;
                 </p>
                 <div>
                   <p className="font-semibold">{testimonial.name}</p>

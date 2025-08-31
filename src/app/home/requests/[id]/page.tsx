@@ -3,9 +3,9 @@ import RequestBuilder from "@/components/request/RequestBuilder";
 import { useParams } from "next/navigation";
 import React from "react";
 
-function page() {
+function Page() {
   const { id } = useParams();
   return <RequestBuilder id={id as string} />;
 }
 
-export default page;
+export default Page;

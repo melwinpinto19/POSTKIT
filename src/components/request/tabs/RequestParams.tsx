@@ -112,7 +112,7 @@ export default function RequestParams() {
         {params.length === 0 && (
           <div className="text-center py-8 text-muted-foreground">
             <p>No parameters added yet</p>
-            <p className="text-sm">Click "Add Parameter" to get started</p>
+            <p className="text-sm">Click &quot;Add Parameter&quot; to get started</p>
           </div>
         )}
       </div>

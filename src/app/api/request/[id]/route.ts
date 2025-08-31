@@ -6,7 +6,7 @@ import { Folder } from "@/models/folder";
 import { Collection } from "@/models/collection";
 
 interface Context {
-  params: { [key: string]: string };
+  params: Promise<{ [key: string]: string }>;
 }
 
 export const GET = asyncTryCatchWrapper(
@@ -15,8 +15,9 @@ export const GET = asyncTryCatchWrapper(
     userId: mongoose.Types.ObjectId,
     { params }: Context
   ) => {
+    const { id } = await params;
     const requestDoc = await Request.findOne({
-      _id: params.id,
+      _id: id,
       createdBy: userId,
     })
       .lean()
@@ -41,6 +42,7 @@ export const PUT = asyncTryCatchWrapper(
     userId: mongoose.Types.ObjectId,
     { params }: Context
   ) => {
+    const { id } = await params;
     const {
       name,
       method,
@@ -51,7 +53,7 @@ export const PUT = asyncTryCatchWrapper(
       auth,
     } = await req.json();
     const updated = await Request.findOneAndUpdate(
-      { _id: params.id, createdBy: userId },
+      { _id: id, createdBy: userId },
       {
         name,
         method,
@@ -76,8 +78,9 @@ export const DELETE = asyncTryCatchWrapper(
     userId: mongoose.Types.ObjectId,
     { params }: Context
   ) => {
+    const { id } = await params;
     const deleted = await Request.findOneAndDelete({
-      _id: params.id,
+      _id: id,
       createdBy: userId,
     });
     if (!deleted) throw new CustomApiError("Request not found", 404);

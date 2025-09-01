@@ -18,8 +18,8 @@ export default function Header() {
   const { user, logout } = useAuth();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between px-4">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 ">
+      <div className=" flex h-16 items-center justify-between px-4 min-[1300px]:m-auto w-full">
         {/* Logo Section */}
         <div className="flex items-center space-x-2">
           <span className="hidden font-bold text-xl sm:inline-block">

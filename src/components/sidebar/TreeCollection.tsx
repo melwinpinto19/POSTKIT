@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import TreeFolder from "@/components/sidebar/TreeFolder";
 import TreeContextMenu from "@/components/sidebar/TreeContextMenu";
 import { Collection, Folder, Request, TreeItem } from "@/types/sidebar";
+import { useRouter } from "next/navigation";
 
 interface TreeCollectionProps {
   collection: Collection;
@@ -37,6 +38,7 @@ export default function TreeCollection({
     id: string;
     parentId?: string;
   } | null>(null);
+  const router = useRouter();
 
   const isSelected =
     selectedItem?.type === "collection" && selectedItem?.id === collection._id;
@@ -53,6 +55,7 @@ export default function TreeCollection({
   };
 
   const handleClick = () => {
+    router.push(`/home/collections/${collection._id}`);
     onSelect({ type: "collection", id: collection._id });
   };
 

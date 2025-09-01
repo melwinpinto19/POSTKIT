@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import TreeRequest from "@/components/sidebar/TreeRequest";
 import TreeContextMenu from "@/components/sidebar/TreeContextMenu";
 import { TreeItem } from "@/types/sidebar";
+import { useRouter } from "next/navigation";
 
 interface Request {
   _id: string;
@@ -50,6 +51,7 @@ export default function TreeFolder({
     id: string;
     parentId?: string;
   } | null>(null);
+  const router = useRouter();
 
   const isSelected =
     selectedItem?.type === "folder" && selectedItem?.id === folder._id;
@@ -67,6 +69,7 @@ export default function TreeFolder({
   };
 
   const handleClick = () => {
+    router.push(`/home/folders/${folder._id}`);
     onSelect({ type: "folder", id: folder._id });
   };
 

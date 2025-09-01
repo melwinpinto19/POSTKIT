@@ -13,7 +13,7 @@ function Request() {
 
   if (isLoading) {
     return (
-      <div className="w-full max-w-6xl mx-auto p-4 overflow-auto">
+      <div className="w-full mx-auto p-4 overflow-auto">
         <div className="flex items-center justify-between">
           <Skeleton className="h-6 w-1/3" />
           <Skeleton className="h-8 w-20" />
@@ -28,7 +28,7 @@ function Request() {
   }
 
   return (
-    <div className="w-full max-w-6xl mx-auto p-4 overflow-auto">
+    <div className="w-full mx-auto p-4 overflow-auto">
       <div className="flex items-center justify-between">
         <RequestBreadcrumb />
         <SaveRequestButton />

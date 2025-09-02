@@ -15,6 +15,15 @@ export const getRequestById = async (id: string) => {
   );
 };
 
+export const getRequestsByFolderId = async (folderId: string) => {
+  return await instance.get(
+    `/folder/${folderId}/requests`,
+    {},
+    {} as AxiosRequestHeaders,
+    true
+  );
+};
+
 export const createRequest = async (data: CreateRequestData) => {
   return await instance.post(
     "/request",

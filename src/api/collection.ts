@@ -10,6 +10,15 @@ export const getCollections = async () => {
   );
 };
 
+export const getCollectionById = async (id: string) => {
+  return await instance.get(
+    `/collections/${id}`,
+    {},
+    {} as AxiosRequestHeaders,
+    true
+  );
+};
+
 export const createCollection = async (name: string, description: string) => {
   return await instance.post(
     "/collections",

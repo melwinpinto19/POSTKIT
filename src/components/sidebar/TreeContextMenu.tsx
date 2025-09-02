@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { exportCollection } from "@/api/collection";
 import { createBlob, downloadFile, getBlobURL } from "@/utils/utils";
 import { toast } from "sonner";
+import DeleteDialog from "../shared/DeleteDialog";
 
 interface TreeContextMenuProps {
   x: number;
@@ -246,25 +247,13 @@ export default function TreeContextMenu({
       </div>
 
       {/* AlertDialog rendered outside the menu */}
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{getDeleteTitle()}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {getDeleteDescription()}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteConfirm}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteDialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        onConfirm={handleDeleteConfirm}
+        title={getDeleteTitle()}
+        description={getDeleteDescription()}
+      />
     </>
   );
 }

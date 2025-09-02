@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import TreeRequest from "@/components/sidebar/TreeRequest";
 import TreeContextMenu from "@/components/sidebar/TreeContextMenu";
 import { TreeItem } from "@/types/sidebar";
+import { usePathname, useRouter } from "next/navigation";
 
 interface Request {
   _id: string;
@@ -50,9 +51,10 @@ export default function TreeFolder({
     id: string;
     parentId?: string;
   } | null>(null);
+  const router = useRouter();
+  const pathname = usePathname();
 
-  const isSelected =
-    selectedItem?.type === "folder" && selectedItem?.id === folder._id;
+  const isSelected = pathname === `/home/folders/${folder._id}`;
 
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -67,7 +69,8 @@ export default function TreeFolder({
   };
 
   const handleClick = () => {
-    onSelect({ type: "folder", id: folder._id });
+    router.push(`/home/folders/${folder._id}`);
+    // onSelect({ type: "folder", id: folder._id });
   };
 
   const handleCreateRequest = (e: React.MouseEvent) => {

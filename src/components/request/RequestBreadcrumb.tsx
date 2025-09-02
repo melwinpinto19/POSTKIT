@@ -50,11 +50,11 @@ export default function RequestBreadcrumb() {
     }
   };
 
-  const breadcrumbItems = [
-    { name: breadcrumb[0], type: "workspace", href: "/" },
-    { name: breadcrumb[1], type: "folder", href: "/collection/1" },
-    { name: request.name, type: "request" },
-  ];
+  const breadcrumbItems = breadcrumb.length > 0 ? [
+    { name: breadcrumb[0].name, type: "workspace", href: breadcrumb[0].url },
+    { name: breadcrumb[1].name, type: "folder", href: breadcrumb[1].url },
+    { name: breadcrumb[2].name, type: "request", href: breadcrumb[2].url },
+  ] : [];
 
   return (
     <Breadcrumb>
@@ -75,10 +75,7 @@ export default function RequestBreadcrumb() {
                       className="h-7 w-[180px] px-2 text-sm"
                     />
                   ) : (
-                    <span
-                      className="cursor-pointer"
-                      onClick={handleNameClick}
-                    >
+                    <span className="cursor-pointer" onClick={handleNameClick}>
                       {item.name}
                     </span>
                   )}

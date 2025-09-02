@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import TreeFolder from "@/components/sidebar/TreeFolder";
 import TreeContextMenu from "@/components/sidebar/TreeContextMenu";
 import { Collection, Folder, Request, TreeItem } from "@/types/sidebar";
+import { usePathname, useRouter } from "next/navigation";
 
 interface TreeCollectionProps {
   collection: Collection;
@@ -37,9 +38,10 @@ export default function TreeCollection({
     id: string;
     parentId?: string;
   } | null>(null);
+  const router = useRouter();
+  const pathname = usePathname();
 
-  const isSelected =
-    selectedItem?.type === "collection" && selectedItem?.id === collection._id;
+  const isSelected = pathname === `/home/collections/${collection._id}`;
 
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -53,7 +55,8 @@ export default function TreeCollection({
   };
 
   const handleClick = () => {
-    onSelect({ type: "collection", id: collection._id });
+    router.push(`/home/collections/${collection._id}`);
+    // onSelect({ type: "collection", id: collection._id });
   };
 
   const handleCreateFolder = (e: React.MouseEvent) => {

@@ -13,7 +13,7 @@ type RequestContextType = {
   setIsResponseLoading: React.Dispatch<React.SetStateAction<boolean>>;
   edited: boolean;
   setEdited: React.Dispatch<React.SetStateAction<boolean>>;
-  breadcrumb: string[];
+  breadcrumb: { name: string; url: string }[];
 };
 
 const RequestContext = createContext<RequestContextType | undefined>(undefined);
@@ -48,7 +48,9 @@ export const RequestProvider: React.FC<{
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isResponseLoading, setIsResponseLoading] = useState<boolean>(false);
   const [edited, setEdited] = useState<boolean>(false);
-  const [breadcrumb, setBreadcrumb] = useState<string[]>([]);
+  const [breadcrumb, setBreadcrumb] = useState<{ name: string; url: string }[]>(
+    []
+  );
 
   useEffect(() => {
     const fetchRequest = async () => {
@@ -65,10 +67,21 @@ export const RequestProvider: React.FC<{
             auth: data.data.auth,
             name: data.data.name,
           });
+          console.log(data);
+          
           setBreadcrumb([
-            data.data.folder.collectionName.name,
-            data.data.folder.name,
-            data.data.name,
+            {
+              name: data.data.folder.collectionName.name,
+              url: `/home/collections/${data.data.folder.collectionName._id}`,
+            },
+            {
+              name: data.data.folder.name,
+              url: `/home/folders/${data.data.folder._id}`,
+            },
+            {
+              name: data.data.name,
+              url: `/home/requests/${data.data._id}`,
+            },
           ]);
         }
       } catch (error) {

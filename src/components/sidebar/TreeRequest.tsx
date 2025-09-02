@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import TreeContextMenu from "@/components/sidebar/TreeContextMenu";
 import { TreeItem } from "@/types/sidebar";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 interface Request {
   _id: string;
@@ -53,9 +53,9 @@ export default function TreeRequest({
     parentId?: string;
   } | null>(null);
   const router = useRouter();
+  const pathname = usePathname();
 
-  const isSelected =
-    selectedItem?.type === "request" && selectedItem?.id === request._id;
+  const isSelected = pathname === `/home/requests/${request._id}`;
 
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();

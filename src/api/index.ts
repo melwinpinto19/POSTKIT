@@ -1,11 +1,11 @@
+import { RequestBody } from "@/types/request";
+
 export interface RequestOptions {
   method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "HEAD" | "OPTIONS";
   url: string;
   headers?: Record<string, string>;
-  body?: {
-    type: "raw" | "json" | "form";
-    content: any;
-  };
+  body?: RequestBody;
+  selectedBodyType?: string;
 }
 
 export interface ApiResponse {
@@ -27,21 +27,24 @@ export class ApiClient {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   }
 
-  private prepareRequestBody(body?: RequestOptions["body"]): {
+  private prepareRequestBody(
+    body?: RequestOptions["body"],
+    selectedBodyType?: string
+  ): {
     processedBody: any;
     contentType?: string;
   } {
-    if (!body || !body.content) {
+    if (!selectedBodyType || !body) {
       return { processedBody: null };
     }
 
-    switch (body.type) {
+    switch (selectedBodyType) {
       case "json":
         try {
           const jsonContent =
-            typeof body.content === "string"
-              ? JSON.parse(body.content)
-              : body.content;
+            typeof body.json === "string"
+              ? JSON.parse(body.json)
+              : body.json;
           return {
             processedBody: JSON.stringify(jsonContent),
             contentType: "application/json",
@@ -51,37 +54,20 @@ export class ApiClient {
         }
 
       case "form":
-        if (typeof body.content === "string") {
-          // Parse form data from string format (key=value&key2=value2)
-          const formData = new URLSearchParams();
-          body.content.split("&").forEach((pair) => {
-            const [key, value] = pair.split("=");
-            if (key && value) {
-              formData.append(
-                decodeURIComponent(key),
-                decodeURIComponent(value)
-              );
-            }
-          });
-          return {
-            processedBody: formData,
-            contentType: "application/x-www-form-urlencoded",
-          };
-        } else if (body.content instanceof FormData) {
-          return { processedBody: body.content };
-        } else {
-          // Convert object to FormData
-          const formData = new FormData();
-          Object.entries(body.content).forEach(([key, value]) => {
-            formData.append(key, value as string);
-          });
-          return { processedBody: formData };
-        }
+        const formData = new URLSearchParams();
+        body.form.forEach((pair) => {
+          const { key, value } = pair;
+          formData.append(key, value);
+        });
+        return {
+          processedBody: formData,
+          contentType: "application/x-www-form-urlencoded",
+        };
 
       case "raw":
       default:
         return {
-          processedBody: body.content,
+          processedBody: body.raw,
           contentType: "text/plain",
         };
     }
@@ -162,7 +148,8 @@ export class ApiClient {
     try {
       // Prepare request body
       const { processedBody, contentType } = this.prepareRequestBody(
-        options.body
+        options.body,
+        options.selectedBodyType
       );
 
       // Prepare headers

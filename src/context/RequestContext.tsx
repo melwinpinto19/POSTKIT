@@ -27,7 +27,7 @@ export const RequestProvider: React.FC<{
     url: "",
     headers: [],
     params: [],
-    body: { type: "raw", content: "" },
+    body: { raw: "", form: [], json: {} },
     auth: {
       type: "none",
       token: "",
@@ -43,6 +43,7 @@ export const RequestProvider: React.FC<{
       realm: "",
     },
     name: "",
+    selectedBodyType: "raw",
   });
   const [response, setResponse] = useState<ApiResponse | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -66,9 +67,10 @@ export const RequestProvider: React.FC<{
             body: data.data.body,
             auth: data.data.auth,
             name: data.data.name,
+            selectedBodyType: "raw",
           });
           console.log(data);
-          
+
           setBreadcrumb([
             {
               name: data.data.folder.collectionName.name,

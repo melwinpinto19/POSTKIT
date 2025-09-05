@@ -24,8 +24,9 @@ export interface IRequest extends Document {
   headers: { key: string; value: string }[];
   params: { key: string; value: string }[];
   body?: {
-    type: "raw" | "form" | "json";
-    content: unknown;
+    raw?: string;
+    form?: { key: string; value: string }[];
+    json?: any;
   };
   auth?: IAuthConfig;
   folder: mongoose.Types.ObjectId;
@@ -61,6 +62,15 @@ const AuthConfigSchema = new Schema<IAuthConfig>(
   { _id: false }
 ); // Disable _id for subdocument
 
+const BodyDataSchema= new Schema(
+  {
+    raw: String,
+    form: [{ key: String, value: String }],
+    json: Schema.Types.Mixed,
+  },
+  { _id: false }
+);
+
 // Request Schema
 const RequestSchema = new Schema<IRequest>({
   name: { type: String, required: true },
@@ -72,7 +82,7 @@ const RequestSchema = new Schema<IRequest>({
   url: { type: String, required: true },
   headers: [{ key: String, value: String }],
   params: [{ key: String, value: String }],
-  body: Schema.Types.Mixed,
+  body: BodyDataSchema,
   auth: {
     type: AuthConfigSchema,
     default: { type: "none" },

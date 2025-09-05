@@ -1,9 +1,6 @@
-import { AuthConfig } from "../request";
+import { AuthConfig, RequestBodyType } from "../request";
 
-export interface RequestBody {
-  type: "raw" | "form" | "json";
-  content: unknown;
-}
+
 
 export interface CreateRequestData {
   name: string;
@@ -11,7 +8,7 @@ export interface CreateRequestData {
   url: string;
   headers?: { key: string; value: string }[];
   params?: { key: string; value: string }[];
-  body?: RequestBody;
+  body?: RequestBodyType;
   auth?: AuthConfig;
   folder: string;
 }
@@ -22,6 +19,6 @@ export interface UpdateRequestData {
   url?: string;
   headers?: { key: string; value: string }[];
   params?: { key: string; value: string }[];
-  body?: RequestBody;
+  body?: RequestBodyType;
   auth?: AuthConfig;
 }

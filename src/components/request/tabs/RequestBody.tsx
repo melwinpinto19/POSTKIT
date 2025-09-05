@@ -2,14 +2,15 @@
 import React from "react";
 import { useRequest } from "@/context/RequestContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { RequestBodyType } from "@/types/request";
 import JsonEditor from "../shared/JsonEditor";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export default function RequestBody() {
   const { request, setRequest, edited, setEdited } = useRequest();
-  const body = request.body || { raw: "", form: "", json: "" };
+  const body = request.body || { raw: "", form: [], json: "" };
   const type = request.selectedBodyType;
 
   const updateBodyType = (type: string) => {
@@ -20,12 +21,31 @@ export default function RequestBody() {
     if (!edited) setEdited(true);
   };
 
-  const updateBodyContent = (type: string, content: string) => {
+  const updateBodyContent = (type: string, content: any) => {
     setRequest((prev) => ({
       ...prev,
       body: { ...body, [type]: content },
     }));
     if (!edited) setEdited(true);
+  };
+
+  // Form Data Handlers
+  const handleFormChange = (idx: number, field: "key" | "value", value: string) => {
+    const updated = body.form.map((item: { key: string; value: string }, i: number) =>
+      i === idx ? { ...item, [field]: value } : item
+    );
+    updateBodyContent("form", updated);
+  };
+
+  const handleAddFormRow = () => {
+    updateBodyContent("form", [...body.form, { key: "", value: "" }]);
+  };
+
+  const handleRemoveFormRow = (idx: number) => {
+    updateBodyContent(
+      "form",
+      body.form.filter((_: any, i: number) => i !== idx)
+    );
   };
 
   return (
@@ -44,11 +64,11 @@ export default function RequestBody() {
         </TabsList>
 
         <TabsContent value="raw" className="mt-4">
-          <Textarea
+          <textarea
             placeholder="Enter raw body content..."
             value={body.raw}
             onChange={(e) => updateBodyContent("raw", e.target.value)}
-            className="min-h-[200px] font-mono"
+            className="min-h-[200px] font-mono w-full border rounded-md p-2"
           />
         </TabsContent>
 
@@ -59,21 +79,57 @@ export default function RequestBody() {
               updateBodyContent("json", value);
             }}
           />
-
           <p className="text-xs text-muted-foreground mt-2">
             Enter valid JSON content
           </p>
         </TabsContent>
 
         <TabsContent value="form" className="mt-4">
-          <Textarea
-            placeholder="key1=value1&key2=value2"
-            value={""}
-            onChange={(e) => updateBodyContent("form", e.target.value)}
-            className="min-h-[200px]"
-          />
+          <div className="space-y-2">
+            {Array.isArray(body.form) &&
+              body.form.map(
+                (item: { key: string; value: string }, idx: number) => (
+                  <div key={idx} className="flex gap-2 items-center">
+                    <Input
+                      placeholder="Key"
+                      value={item.key}
+                      onChange={(e) =>
+                        handleFormChange(idx, "key", e.target.value)
+                      }
+                      className="w-1/3"
+                    />
+                    <Input
+                      placeholder="Value"
+                      value={item.value}
+                      onChange={(e) =>
+                        handleFormChange(idx, "value", e.target.value)
+                      }
+                      className="w-1/2"
+                    />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleRemoveFormRow(idx)}
+                      className="text-destructive"
+                      type="button"
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                )
+              )}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleAddFormRow}
+              type="button"
+              className="mt-2"
+            >
+              Add Row
+            </Button>
+          </div>
           <p className="text-xs text-muted-foreground mt-2">
-            Enter form data in key=value format separated by &
+            Enter form data as key-value pairs
           </p>
         </TabsContent>
       </Tabs>

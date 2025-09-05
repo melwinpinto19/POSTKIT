@@ -4,8 +4,15 @@ export interface RequestType {
   url: string;
   headers: Array<{ key: string; value: string }>;
   params: Array<{ key: string; value: string }>;
-  body: { type: RequestBodyType; content: any };
+  body: RequestBody;
+  selectedBodyType: RequestBodyType;
   auth: AuthConfig;
+}
+
+export interface RequestBody {
+  raw: string;
+  form: Array<{ key: string; value: string }>;
+  json: any;
 }
 
 export type RequestMethod =

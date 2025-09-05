@@ -7,23 +7,23 @@ import { Label } from "@/components/ui/label";
 import { RequestBodyType } from "@/types/request";
 import JsonEditor from "../shared/JsonEditor";
 
-
 export default function RequestBody() {
   const { request, setRequest, edited, setEdited } = useRequest();
-  const body = request.body || { type: "raw", content: "" };
+  const body = request.body || { raw: "", form: "", json: "" };
+  const type = request.selectedBodyType;
 
   const updateBodyType = (type: string) => {
     setRequest((prev) => ({
       ...prev,
-      body: { ...body, type: type as RequestBodyType, content: "" },
+      selectedBodyType: type as RequestBodyType,
     }));
     if (!edited) setEdited(true);
   };
 
-  const updateBodyContent = (content: string) => {
+  const updateBodyContent = (type: string, content: string) => {
     setRequest((prev) => ({
       ...prev,
-      body: { ...body, content: content as RequestBodyType },
+      body: { ...body, [type]: content },
     }));
     if (!edited) setEdited(true);
   };
@@ -36,7 +36,7 @@ export default function RequestBody() {
         </Label>
       </div>
 
-      <Tabs value={body.type} onValueChange={updateBodyType} className="w-full">
+      <Tabs value={type} onValueChange={updateBodyType} className="w-full">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="raw">Raw</TabsTrigger>
           <TabsTrigger value="json">JSON</TabsTrigger>
@@ -46,16 +46,18 @@ export default function RequestBody() {
         <TabsContent value="raw" className="mt-4">
           <Textarea
             placeholder="Enter raw body content..."
-            value={body.content as string}
-            onChange={(e) => updateBodyContent(e.target.value)}
+            value={body.raw}
+            onChange={(e) => updateBodyContent("raw", e.target.value)}
             className="min-h-[200px] font-mono"
           />
         </TabsContent>
 
         <TabsContent value="json" className="mt-4">
           <JsonEditor
-            value={body.content as string}
-            onChange={updateBodyContent}
+            value={body.json}
+            onChange={(value) => {
+              updateBodyContent("json", value);
+            }}
           />
 
           <p className="text-xs text-muted-foreground mt-2">
@@ -66,8 +68,8 @@ export default function RequestBody() {
         <TabsContent value="form" className="mt-4">
           <Textarea
             placeholder="key1=value1&key2=value2"
-            value={body.content as string}
-            onChange={(e) => updateBodyContent(e.target.value)}
+            value={""}
+            onChange={(e) => updateBodyContent("form", e.target.value)}
             className="min-h-[200px]"
           />
           <p className="text-xs text-muted-foreground mt-2">

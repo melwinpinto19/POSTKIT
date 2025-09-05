@@ -163,6 +163,7 @@ export default function RequestTopBar() {
       url: finalUrl,
       headers: transformedHeaders,
       body: request.body,
+      selectedBodyType: request.selectedBodyType,
     });
 
     setResponse(response);

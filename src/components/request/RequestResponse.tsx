@@ -17,6 +17,7 @@ import { useTheme } from "next-themes";
 import ReactJson from "react-json-view";
 import { useRequest } from "@/context/RequestContext";
 import JsonPreviewEditor from "./shared/JsonPreviewEditor";
+import JsonEditor from "./shared/JsonEditor";
 
 export default function RequestResponse() {
   const { theme } = useTheme();
@@ -35,7 +36,7 @@ export default function RequestResponse() {
 
     // Handle JSON data
     if (typeof data === "object" && data !== null && !data.type) {
-      return <JsonPreviewEditor json={data} edit={false} />;
+      return <JsonEditor value={JSON.stringify(data, null, 2)} editing={false} />;
     }
 
     // Handle text/plain, HTML, XML, etc.

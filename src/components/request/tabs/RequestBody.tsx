@@ -1,10 +1,12 @@
+"use client";
 import React from "react";
 import { useRequest } from "@/context/RequestContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { RequestBodyType } from "@/types/request";
-import JsonPreviewEditor from "../shared/JsonPreviewEditor";
+import JsonEditor from "../shared/JsonEditor";
+
 
 export default function RequestBody() {
   const { request, setRequest, edited, setEdited } = useRequest();
@@ -51,17 +53,11 @@ export default function RequestBody() {
         </TabsContent>
 
         <TabsContent value="json" className="mt-4">
-          <Textarea
-            placeholder='{\n  "key": "value"\n}'
+          <JsonEditor
             value={body.content as string}
-            onChange={(e) => updateBodyContent(e.target.value)}
-            className="min-h-[200px] font-mono"
+            onChange={updateBodyContent}
           />
-          {/* <JsonPreviewEditor
-            json={body.content || {}}
-            edit={true}
-            onEdit={updateBodyContent}
-          /> */}
+
           <p className="text-xs text-muted-foreground mt-2">
             Enter valid JSON content
           </p>
